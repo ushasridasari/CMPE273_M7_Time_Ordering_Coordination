@@ -1,0 +1,22 @@
+
+=== TEST 1: Out-of-order and duplicate events ===
+Received ORDER-100, version 2, status PAID
+Version 2 is pending. Waiting for version 1.
+Received ORDER-100, version 1, status CREATED
+Applied version 1. New status: CREATED
+Applied version 2. New status: PAID
+Received ORDER-100, version 2, status PAID
+Duplicate or old event ignored: version 2
+Current state for ORDER-100: version=2, status=PAID, pending=[]
+
+=== TEST 2: Missing event ===
+Received ORDER-200, version 2, status PAID
+Version 2 is pending. Waiting for version 1.
+Current state for ORDER-200: version=0, status=NOT_CREATED, pending=[2]
+The order did not jump to PAID because version 1 is missing.
+
+=== TEST 3: Stale worker and fencing tokens ===
+ACCEPTED: worker-A used token 1. New status: PAID
+ACCEPTED: worker-B used token 2. New status: SHIPPED
+REJECTED: worker-A used old token 1. Latest token is 2.
+Final worker-protected state: token=2, status=SHIPPED
